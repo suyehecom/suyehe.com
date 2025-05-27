@@ -1,0 +1,517 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>单页 苏叶荷</title>
+    <link rel="icon" href="favicon.ico" type="image/png">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#3B82F6', // 主色调-蓝色
+                        secondary: '#10B981', // 辅助色-绿色
+                        accent: '#8B5CF6', // 强调色-紫色
+                        dark: '#1F2937', // 深色
+                        light: '#F9FAFB', // 浅色
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'system-ui', 'sans-serif'],
+                    },
+                }
+            }
+        }
+    </script>
+    <style type="text/tailwindcss">
+        @layer utilities {
+            .content-auto {
+                content-visibility: auto;
+            }
+            .sidebar-icon {
+                @apply flex items-center gap-3 px-4 py-3 text-gray-600 rounded-lg transition-all duration-300 hover:bg-primary/10 hover:text-primary;
+            }
+            .sidebar-icon.active {
+                @apply bg-primary/10 text-primary font-medium;
+            }
+            .content-slide {
+                @apply absolute inset-0 opacity-0 transform translate-x-full transition-all duration-500 ease-in-out;
+            }
+            .content-slide.active {
+                @apply opacity-100 translate-x-0 z-10;
+            }
+        }
+
+        /* 新增布局样式 */
+        .main-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 2rem;
+            padding: 2rem;
+            max-width: 1440px;
+            margin: 0 auto;
+        }
+
+        #sidebar {
+            width: 18rem;
+            background-color: white;
+            border-radius: 1rem;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+            padding: 1.5rem;
+            position: sticky;
+            top: 2rem;
+            
+            display: flex;
+            flex-direction: column;
+        }
+
+        main {
+            flex-grow: 1;
+            min-width: 0;
+            max-width: calc(100% - 18rem);
+        }
+
+        /* 响应式调整 */
+        @media (max-width: 1023px) {
+            #sidebar {
+                position: fixed;
+                z-Index: 50;
+                transform: translateX(-100%);
+                transition: transform 0.3s ease-in-out;
+                height: 100vh;
+                top: 0;
+                left: 0;
+            }
+
+            #sidebar.active {
+                transform: translateX(0);
+            }
+
+            main {
+                
+            }
+
+            .mobile-menu-button {
+                display: block !important;
+            }
+        }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-800 min-h-screen flex flex-col">
+    <!-- 移动端顶部导航栏 -->
+    <header class="lg:hidden bg-white shadow-md fixed top-0 left-0 right-0 z-40">
+        <div class="flex items-center justify-between px-4 py-3">
+            <button class="mobile-menu-button text-gray-600 focus:outline-none" id="mobile-menu-button">
+                <i class="fa fa-bars text-xl"></i>
+            </button>
+            <h2 class="text-xl font-bold text-primary">⚠异常，使用PC端访问</h2>
+            <div class="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center">
+                <i class="fa fa-user text-primary"></i>
+            </div>
+        </div>
+    </header>
+
+    <div class="flex-1 pt-14 lg:pt-0 relative">
+        <!-- 主容器 - 回字形布局 -->
+        <div class="main-container">
+            <!-- 左侧导航栏 -->
+            <aside id="sidebar">
+                <div class="mb-6 pb-6 border-b border-gray-100">
+                    <div class="flex items-center gap-4">
+                        
+                        <div class="w-24 h-24 mx-auto rounded-full overflow-hidden border-4 border-primary/20 shadow-lg">
+                                <img src="https://picsum.photos/200/200?random=1" alt="个人头像" class="w-full h-full object-cover">
+                            </div>
+                        <div>
+                            <h3 class="text-xl font-bold text-dark">苏叶荷</h3>
+                            <p class="text-sm text-gray-500">suyehe</p>
+                        </div>
+                    </div>
+                </div>
+
+                <nav class="flex-1 overflow-y-auto">
+                    <ul class="space-y-1">
+                        <li>
+                            <a href="#home" class="sidebar-icon active" data-target="home">
+                                <i class="fa fa-home text-lg"></i>
+                                <span>首页</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="#projects" class="sidebar-icon" data-target="projects">
+                                <i class="fa fa-th-large text-lg"></i>
+                                <span>站点展示</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="#news" class="sidebar-icon" data-target="news">
+                                <i class="fa fa-bell-o text-lg"></i>
+                                <span>最新动态</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="#about" class="sidebar-icon" data-target="about">
+                                <i class="fa fa-info-circle text-lg"></i>
+                                <span>关于本站</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="#contact" class="sidebar-icon" data-target="contact">
+                                <i class="fa fa-envelope text-lg"></i>
+                                <span>联系我</span>
+                            </a>
+                        </li>
+                    </ul>
+                </nav>
+
+                <div class="pt-6 border-t border-gray-100">
+                    <div class="flex justify-between items-center">
+                        <div class="text-sm text-gray-500">
+                            <span id="version">v1.0.0</span>
+                        </div>
+                        <div class="flex gap-3">
+                            <a href="#" class="text-gray-400 hover:text-primary transition-colors">
+                                <i class="fa fa-github"></i>
+                            </a>
+                            <a href="#" class="text-gray-400 hover:text-primary transition-colors">
+                                <i class="fa fa-twitter"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </aside>
+
+            <!-- 右侧内容区域 -->
+            <main class="relative overflow-hidden">
+                <div class="bg-white rounded-xl shadow-lg p-6 lg:p-8 min-h-[calc(100vh-14rem)]">
+                    <!-- 内容容器 -->
+                    <div class="relative h-full">
+                        <!-- 首页内容 -->
+                        <div id="home-content" class="content-slide active">
+                            <h2 class="text-3xl font-bold text-dark mb-6">欢迎来到我的个人主页</h2>
+                            <p class="text-gray-600 text-lg mb-6">这是一个基于HTML、CSS和JavaScript的现代化个人展示网站，展示了我的项目、技能和联系方式。</p>
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                                <div class="bg-primary/10 rounded-lg p-5 text-center">
+                                    <div class="w-14 h-14 rounded-full bg-primary/20 flex items-center justify-center mx-auto mb-4">
+                                        <i class="fa fa-code text-2xl text-primary"></i>
+                                    </div>
+                                    <h3 class="text-xl font-semibold mb-2">前端开发</h3>
+                                    <p class="text-gray-600">精通HTML、CSS、JavaScript和各种前端框架</p>
+                                </div>
+                                <div class="bg-secondary/10 rounded-lg p-5 text-center">
+                                    <div class="w-14 h-14 rounded-full bg-secondary/20 flex items-center justify-center mx-auto mb-4">
+                                        <i class="fa fa-paint-brush text-2xl text-secondary"></i>
+                                    </div>
+                                    <h3 class="text-xl font-semibold mb-2">UI设计</h3>
+                                    <p class="text-gray-600">擅长创建美观且用户友好的界面设计</p>
+                                </div>
+                                <div class="bg-accent/10 rounded-lg p-5 text-center">
+                                    <div class="w-14 h-14 rounded-full bg-accent/20 flex items-center justify-center mx-auto mb-4">
+                                        <i class="fa fa-rocket text-2xl text-accent"></i>
+                                    </div>
+                                    <h3 class="text-xl font-semibold mb-2">项目管理</h3>
+                                    <p class="text-gray-600">能够高效管理和完成复杂的项目开发</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- 站点展示内容 -->
+                        <div id="projects-content" class="content-slide">
+                            <h2 class="text-3xl font-bold text-dark mb-6">站点展示</h2>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div class="rounded-xl overflow-hidden shadow-md group hover:shadow-xl transition-shadow duration-300">
+                                    <div class="relative overflow-hidden">
+                                        <img src="https://picsum.photos/600/400?random=1" alt="项目图片" class="w-full h-48 object-cover transition-transform duration-500 group-hover:scale-105">
+                                        <div class="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end">
+                                            <div class="p-4">
+                                                <a href="https://suyehe.com" target="_blank" class="inline-block bg-white text-primary px-4 py-2 rounded-full text-sm font-medium hover:bg-primary hover:text-white transition-colors duration-300">
+                                                    查看详情
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="p-4">
+                                        <h3 class="font-semibold text-lg mb-1">个人单页</h3>
+                                        <p class="text-gray-600 text-sm">展示个人设计作品的响应式网站。</p>
+                                    </div>
+                                </div>
+                                <div class="rounded-xl overflow-hidden shadow-md group hover:shadow-xl transition-shadow duration-300">
+                                    <div class="relative overflow-hidden">
+                                        <img src="https://picsum.photos/600/400?random=2" alt="项目图片" class="w-full h-48 object-cover transition-transform duration-500 group-hover:scale-105">
+                                        <div class="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end">
+                                            <div class="p-4">
+                                                <a href="https://suyehe.com" target="_blank" class="inline-block bg-white text-primary px-4 py-2 rounded-full text-sm font-medium hover:bg-primary hover:text-white transition-colors duration-300">
+                                                    查看详情
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="p-4">
+                                        <h3 class="font-semibold text-lg mb-1">作品集网站</h3>
+                                        <p class="text-gray-600 text-sm">展示个人设计作品的响应式网站，具有动态展示和分类功能。</p>
+                                    </div>
+                                </div>
+                                <div class="rounded-xl overflow-hidden shadow-md group hover:shadow-xl transition-shadow duration-300">
+                                    <div class="relative overflow-hidden">
+                                        <img src="https://picsum.photos/600/400?random=3" alt="项目图片" class="w-full h-48 object-cover transition-transform duration-500 group-hover:scale-105">
+                                        <div class="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end">
+                                            <div class="p-4">
+                                                <a href="https://www.suyehe.com" target="_blank" class="inline-block bg-white text-primary px-4 py-2 rounded-full text-sm font-medium hover:bg-primary hover:text-white transition-colors duration-300">
+                                                    查看详情
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="p-4">
+                                        <h3 class="font-semibold text-lg mb-1">个人博客</h3>
+                                        <p class="text-gray-600 text-sm">一个基于React的个人博客网站，用于分享技术文章和个人思考。</p>
+                                    </div>
+                                </div>
+                                <div class="rounded-xl overflow-hidden shadow-md group hover:shadow-xl transition-shadow duration-300">
+                                    <div class="relative overflow-hidden">
+                                        <img src="https://picsum.photos/600/400?random=4" alt="项目图片" class="w-full h-48 object-cover transition-transform duration-500 group-hover:scale-105">
+                                        <div class="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end">
+                                            <div class="p-4">
+                                                <a href="https://dh.suyehe.com" target="_blank" class="inline-block bg-white text-primary px-4 py-2 rounded-full text-sm font-medium hover:bg-primary hover:text-white transition-colors duration-300">
+                                                    查看详情
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="p-4">
+                                        <h3 class="font-semibold text-lg mb-1">导航网站</h3>
+                                        <p class="text-gray-600 text-sm">基于React和Firebase的网站导航应用，支持索引聚合。</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- 最新动态内容 -->
+                        <div id="news-content" class="content-slide">
+                            <h2 class="text-3xl font-bold text-dark mb-6">最新动态</h2>
+                            <div class="space-y-8">
+                                <!-- 项目更新 -->
+                                <div class="bg-gray-50 rounded-xl p-6 border-l-4 border-primary">
+                                    <div class="flex justify-between items-start mb-3">
+                                        <h3 class="text-xl font-semibold">项目更新</h3>
+                                        <span class="text-sm text-gray-500">2023年5月15日</span>
+                                    </div>
+                                    <p class="text-gray-600 leading-relaxed">
+                                        完成了个人博客网站的重构，增加了响应式设计和新的文章分类功能。现在网站在各种设备上都能提供更好的浏览体验，同时优化了文章分类和搜索功能，提升了内容的可访问性。
+                                    </p>
+                                </div>
+                                
+                                <!-- 学习进展 -->
+                                <div class="bg-gray-50 rounded-xl p-6 border-l-4 border-secondary">
+                                    <div class="flex justify-between items-start mb-3">
+                                        <h3 class="text-xl font-semibold">学习进展</h3>
+                                        <span class="text-sm text-gray-500">2023年5月8日</span>
+                                    </div>
+                                    <p class="text-gray-600 leading-relaxed">
+                                        正在学习React和Node.js，计划开发一个全栈应用项目。目前已经掌握了React的基本概念和组件化开发，正在学习状态管理和路由。Node.js方面，正在学习Express框架和数据库操作。
+                                    </p>
+                                </div>
+                                
+                                <!-- 更多动态可以在这里添加 -->
+                            </div>
+                        </div>
+                        
+                        <!-- 关于本站内容 -->
+                        <div id="about-content" class="content-slide">
+                            <h2 class="text-3xl font-bold text-dark mb-6">关于本站</h2>
+                            <div class="space-y-6">
+                                <div>
+                                    <h3 class="text-2xl font-semibold mb-3">网站简介</h3>
+                                    <p class="text-gray-600 leading-relaxed">
+                                        本站是一个个人展示网站，旨在展示我的技能、项目和创作。通过这个平台，我希望能够与更多志同道合的朋友交流和学习。
+                                    </p>
+                                    <p class="text-gray-600 leading-relaxed">
+                                        网站采用现代化的设计理念和技术栈构建，注重用户体验和视觉效果。所有内容均为原创，欢迎访问和分享。
+                                    </p>
+                                </div>
+                                <div>
+                                    <h3 class="text-2xl font-semibold mb-3">技术栈</h3>
+                                    <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                                        <div class="bg-gray-100 rounded-lg p-4 text-center">
+                                            <i class="fa fa-html5 text-3xl text-orange-500 mb-2"></i>
+                                            <p class="font-medium">HTML5</p>
+                                        </div>
+                                        <div class="bg-gray-100 rounded-lg p-4 text-center">
+                                            <i class="fa fa-css3 text-3xl text-blue-500 mb-2"></i>
+                                            <p class="font-medium">CSS3</p>
+                                        </div>
+                                        <div class="bg-gray-100 rounded-lg p-4 text-center">
+                                            <i class="fa fa-js text-3xl text-yellow-500 mb-2"></i>
+                                            <p class="font-medium">JavaScript</p>
+                                        </div>
+                                        <div class="bg-gray-100 rounded-lg p-4 text-center">
+                                            <i class="fa fa-github text-3xl text-gray-800 mb-2"></i>
+                                            <p class="font-medium">Git</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <h3 class="text-2xl font-semibold mb-3">设计理念</h3>
+                                    <p class="text-gray-600 leading-relaxed">
+                                        网站设计遵循简约、现代、功能性的原则，通过清晰的视觉层次和流畅的交互体验，使用户能够轻松获取所需信息。
+                                    </p>
+                                    <p class="text-gray-600 leading-relaxed">
+                                        色彩方案采用蓝色作为主色调，传达专业和信任感；绿色作为辅助色，增添活力和平衡感；同时使用中性色调确保内容的可读性。
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- 联系我内容 -->
+                        <div id="contact-content" class="content-slide">
+                            <h2 class="text-3xl font-bold text-dark mb-6">联系我</h2>
+                            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                                <div>
+                                    <h3 class="text-2xl font-semibold mb-4">联系信息</h3>
+                                    <div class="space-y-4">
+                                        <div class="flex items-center gap-3">
+                                            <div class="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center flex-shrink-0">
+                                                <i class="fa fa-envelope text-primary"></i>
+                                            </div>
+                                            <div>
+                                                <h3 class="font-medium">邮箱</h3>
+                                                <p class="text-gray-600">example@example.com</p>
+                                            </div>
+                                        </div>
+                                        <div class="flex items-center gap-3">
+                                            <div class="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center flex-shrink-0">
+                                                <i class="fa fa-phone text-primary"></i>
+                                            </div>
+                                            <div>
+                                                <h3 class="font-medium">电话</h3>
+                                                <p class="text-gray-600">+86 1** **** ****</p>
+                                            </div>
+                                        </div>
+                                        <div class="flex items-center gap-3">
+                                            <div class="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center flex-shrink-0">
+                                                <i class="fa fa-map-marker text-primary"></i>
+                                            </div>
+                                            <div>
+                                                <h3 class="font-medium">地址</h3>
+                                                <p class="text-gray-600">成都市锦江区三色路***号</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="mt-8">
+                                        <h3 class="text-2xl font-semibold mb-4">社交媒体</h3>
+                                        <div class="flex gap-4">
+                                            <a href="#" target="_blank" class="w-12 h-12 rounded-full bg-[#181717]/10 flex items-center justify-center text-[#181717] hover:bg-[#181717] hover:text-white transition-colors duration-300">
+                                                <i class="fa fa-github"></i>
+                                            </a>
+                                            <a href="#" target="_blank" class="w-12 h-12 rounded-full bg-[#E4405F]/10 flex items-center justify-center text-[#E4405F] hover:bg-[#E4405F] hover:text-white transition-colors duration-300">
+                                                <i class="fa fa-instagram"></i>
+                                            </a>
+                                            <a href="#" target="_blank" class="w-12 h-12 rounded-full bg-[#FE2C55]/10 flex items-center justify-center text-[#FE2C55] hover:bg-[#FE2C55] hover:text-white transition-colors duration-300">
+                                                <i class="fa fa-book"></i>
+                                            </a>
+                                            <a href="#" target="_blank" class="w-12 h-12 rounded-full bg-[#229ED9]/10 flex items-center justify-center text-[#229ED9] hover:bg-[#229ED9] hover:text-white transition-colors duration-300">
+                                                <i class="fa fa-paper-plane"></i>
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <h3 class="text-2xl font-semibold mb-4">发送消息</h3>
+                                    <form class="space-y-4">
+                                        <div>
+                                            <label for="name" class="block text-sm font-medium text-gray-700 mb-1">姓名</label>
+                                            <input type="text" id="name" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary transition-colors">
+                                        </div>
+                                        <div>
+                                            <label for="email" class="block text-sm font-medium text-gray-700 mb-1">邮箱</label>
+                                            <input type="email" id="email" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary transition-colors">
+                                        </div>
+                                        <div>
+                                            <label for="message" class="block text-sm font-medium text-gray-700 mb-1">消息</label>
+                                            <textarea id="message" rows="4" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary transition-colors"></textarea>
+                                        </div>
+                                          <div>
+                                        <a  class="w-full bg-primary hover:bg-primary/90 text-white font-medium py-2 px-4 rounded-lg transition-colors duration-300">
+                                            发送消息
+                                        </a>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+
+
+    <script>
+        // 侧边栏导航切换
+        document.addEventListener('DOMContentLoaded', function() {
+            const sidebarItems = document.querySelectorAll('.sidebar-icon');
+            const contentSlides = document.querySelectorAll('.content-slide');
+            const mobileMenuButton = document.getElementById('mobile-menu-button');
+            const sidebar = document.getElementById('sidebar');
+
+            // 移动端菜单切换
+            mobileMenuButton.addEventListener('click', function() {
+                sidebar.classList.toggle('active');
+            });
+
+            // 导航项点击事件
+            sidebarItems.forEach(item => {
+                item.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    
+                    // 关闭移动端菜单
+                    if (window.innerWidth < 1024) {
+                        sidebar.classList.remove('active');
+                    }
+                    
+                    // 获取目标内容ID
+                    const targetId = this.getAttribute('data-target');
+                    const targetContent = document.getElementById(`${targetId}-content`);
+                    
+                    // 移除所有导航项的active类
+                    sidebarItems.forEach(navItem => {
+                        navItem.classList.remove('active');
+                    });
+                    
+                    // 为当前导航项添加active类
+                    this.classList.add('active');
+                    
+                    // 隐藏所有内容区域
+                    contentSlides.forEach(slide => {
+                        slide.classList.remove('active');
+                    });
+                    
+                    // 显示目标内容区域
+                    setTimeout(() => {
+                        targetContent.classList.add('active');
+                    }, 100);
+                });
+            });
+
+            // 平滑滚动
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const targetId = this.getAttribute('href');
+                    if (targetId === '#') return;
+                    
+                    const targetElement = document.querySelector(targetId);
+                    if (targetElement) {
+                        targetElement.scrollIntoView({
+                            behavior: 'smooth'
+                        });
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>
